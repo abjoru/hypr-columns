@@ -44,6 +44,23 @@ void CColumnsAlgorithm::calculateWorkspace() {
     if (m_columns.empty())
         return;
 
+    // redistribute: if total windows <= max_columns, one window per column
+    int totalWindows = 0;
+    for (auto& col : m_columns)
+        totalWindows += (int)col->nodes.size();
+
+    if (totalWindows <= getMaxColumns()) {
+        std::vector<SP<SColumnData>> newCols;
+        for (auto& col : m_columns) {
+            for (auto& node : col->nodes) {
+                auto nc = makeShared<SColumnData>();
+                nc->nodes.push_back(node);
+                newCols.push_back(nc);
+            }
+        }
+        m_columns = std::move(newCols);
+    }
+
     auto parent = m_parent.lock();
     if (!parent)
         return;
