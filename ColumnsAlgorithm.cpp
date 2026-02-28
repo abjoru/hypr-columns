@@ -194,6 +194,9 @@ void CColumnsAlgorithm::moveTargetInDirection(SP<Layout::ITarget> target, Math::
                     col->nodes.push_back(node);
                     m_columns.insert(m_columns.begin(), col);
                 }
+            } else if ((int)m_columns[c]->nodes.size() == 1) {
+                // sole window in column — swap columns
+                std::swap(m_columns[c], m_columns[c - 1]);
             } else {
                 m_columns[c]->nodes.erase(m_columns[c]->nodes.begin() + n);
                 auto node = makeShared<SColumnNodeData>();
@@ -212,6 +215,8 @@ void CColumnsAlgorithm::moveTargetInDirection(SP<Layout::ITarget> target, Math::
                     col->nodes.push_back(node);
                     m_columns.push_back(col);
                 }
+            } else if ((int)m_columns[c]->nodes.size() == 1) {
+                std::swap(m_columns[c], m_columns[c + 1]);
             } else {
                 m_columns[c]->nodes.erase(m_columns[c]->nodes.begin() + n);
                 auto node = makeShared<SColumnNodeData>();
