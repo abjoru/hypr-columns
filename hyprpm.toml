@@ -1,0 +1,9 @@
+[repository]
+name = "hypr-columns"
+authors = ["Andreas Bjoru"]
+commit_pins = []
+
+[hypr-columns]
+description = "Equal-width column layout for Hyprland"
+output = "hypr-columns.so"
+build = ["make all"]
