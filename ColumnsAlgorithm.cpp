@@ -163,7 +163,7 @@ void CColumnsAlgorithm::resizeTarget(const Vector2D&, SP<Layout::ITarget>, Layou
     // no-op: equal-width invariant
 }
 
-void CColumnsAlgorithm::recalculate() {
+void CColumnsAlgorithm::recalculate(Layout::eRecalculateReason) {
     calculateWorkspace();
 }
 
@@ -274,14 +274,14 @@ SP<Layout::ITarget> CColumnsAlgorithm::getNextCandidate(SP<Layout::ITarget> old)
 
 // ── Layout Messages ──────────────────────────────────────────────────────
 
-std::expected<void, std::string> CColumnsAlgorithm::layoutMsg(const std::string_view& sv) {
+Config::ErrorResult CColumnsAlgorithm::layoutMsg(const std::string_view& sv) {
     auto parent = m_parent.lock();
     if (!parent)
-        return std::unexpected("no parent");
+        return Config::configError("no parent");
 
     auto space = parent->space();
     if (!space)
-        return std::unexpected("no space");
+        return Config::configError("no space");
 
     // parse "command arg"
     auto spacePos = sv.find(' ');
@@ -293,7 +293,7 @@ std::expected<void, std::string> CColumnsAlgorithm::layoutMsg(const std::string_
     }
 
     if (arg == 0)
-        return std::unexpected("invalid arg, use +1 or -1");
+        return Config::configError("invalid arg, use +1 or -1");
 
     // find currently focused target
     SP<Layout::ITarget> focused;
@@ -313,12 +313,12 @@ std::expected<void, std::string> CColumnsAlgorithm::layoutMsg(const std::string_
     }
 
     if (!focused)
-        return std::unexpected("no focused window");
+        return Config::configError("no focused window");
 
     auto loc       = findTarget(focused);
     int  focusedCol = loc.colIdx;
     if (focusedCol < 0)
-        return std::unexpected("focused window not in columns");
+        return Config::configError("focused window not in columns");
 
     int targetCol = focusedCol + arg;
 
@@ -360,7 +360,7 @@ std::expected<void, std::string> CColumnsAlgorithm::layoutMsg(const std::string_
         return {};
     }
 
-    return std::unexpected("unknown command: " + std::string(cmd));
+    return Config::configError("unknown command: " + std::string(cmd));
 }
 
 // ── Predict Size ─────────────────────────────────────────────────────────
